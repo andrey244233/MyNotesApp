@@ -6,8 +6,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class Note extends RealmObject {
 
-    @PrimaryKey
-    private long id;
+    private int id;
     private String text;
     private Boolean notification;
     private String timeCreated;
@@ -46,11 +45,11 @@ public class Note extends RealmObject {
         this.timeCreated = timeCreated;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 }

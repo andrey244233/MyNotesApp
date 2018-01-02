@@ -1,5 +1,6 @@
 package com.example.home_pc.mynotesapp.MainActivityPackage;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.home_pc.mynotesapp.AddNewNoteActivity;
 import com.example.home_pc.mynotesapp.Data.RealmDB;
 import com.example.home_pc.mynotesapp.Note;
 import com.example.home_pc.mynotesapp.NoteAdapterPackage.NoteAdapter;
@@ -18,10 +20,8 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
 
+import static com.example.home_pc.mynotesapp.AddNewNoteActivity.NOTE_TEXT;
 
 public class MainActivity extends AppCompatActivity implements NoteAdapter.ItemClickCallBack, MainActivityInterface {
 
@@ -29,12 +29,13 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.ItemC
     RecyclerView catRecyclerView;
     @BindView(R.id.fab)
     FloatingActionButton fab;
-    private MainActivityPresenter mainActivityPresenter;
-   // public static Realm realm;
+    MainActivityPresenter mainActivityPresenter;
     ArrayList<Note> notes = new ArrayList<>();
-    ArrayList<Note> list;
+    NoteAdapter noteAdapter;
     RealmDB realmDB;
-    Realm realm;
+    private int ID;
+    public static final int ADD_NEW_NOTE_REQUEST_CODE = 100;
+    private String text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,23 +44,21 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.ItemC
         setTheme(R.style.AppTheme);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         realmDB = new RealmDB();
-        realm = Realm.getDefaultInstance();
-
-
-      //  getDammyData();
-
         mainActivityPresenter = new MainActivityPresenter(this);
-       // mainActivityPresenter.showAllNotes();
-        notes = new ArrayList(realm.where(Note.class).findAll());
+        mainActivityPresenter.showAllNotes();
         Log.v("tag", "size = " + notes.size());
-        NoteAdapter noteAdapter = new NoteAdapter(this, notes);
+
+        noteAdapter = new NoteAdapter(this, notes);
         noteAdapter.setItemClickCallBack(this);
         catRecyclerView.setAdapter(noteAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         catRecyclerView.setLayoutManager(linearLayoutManager);
         makeFloatActionButtonHideAndShow();
         fab.setOnClickListener(fabOnClickListener);
+        ID = notes.size();
+
     }
 
     @Override
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.ItemC
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
             }
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy < 0) {
@@ -82,30 +82,8 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.ItemC
 
     @Override
     public void showAllNotes(ArrayList<Note> notes) {
-       this.notes = notes;
+        this.notes = notes;
     }
-
-    private ArrayList<Note> getDammyData() {
-        ArrayList<Note> notes = new ArrayList<>();
-        realm.beginTransaction();
-        Note note = new Note("Hallo worlds", true, "33.21.43");
-        realm.copyToRealmOrUpdate(note);
-        realm.copyToRealmOrUpdate(new Note("Hallo worlds", true, "33.21.43"));
-        // realm.copyToRealm(new Note("Hallo worlds", true, "33.21.43"));
-        // realm.copyToRealm(new Note("Hallo worlds", true, "33.21.43"));
-        realm.commitTransaction();
-        return notes;
-    }
-
-//    Cat defaultCat = new Cat();
-//    long autoIncrementId;
-//            if(realm.where(Cat.class).count() > 0) {
-//        autoIncrementId = realm.where(Cat.class).max(CatFields.ID.getField()).longValue();
-//    } else {
-//        autoIncrementId= 0;
-//    }
-//            defaultCat.setId(++autoIncrementId);
-
 
     @Override
     public void onItemClick(int position, View v) {
@@ -118,19 +96,28 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.ItemC
                 mainActivityPresenter.openNotificationActivity(this);
                 Toast.makeText(this, "position of notification" + position, Toast.LENGTH_SHORT).show();
                 break;
-
         }
     }
 
     View.OnClickListener fabOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.v("tag", "fab on click");
-            getDammyData();
-            mainActivityPresenter.addNewNote(MainActivity.this);
-           // getDammyData();
+            Intent intent = new Intent(MainActivity.this, AddNewNoteActivity.class);
+            startActivityForResult(intent, ADD_NEW_NOTE_REQUEST_CODE);
         }
     };
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK & requestCode == ADD_NEW_NOTE_REQUEST_CODE) {
+            text = data.getStringExtra(NOTE_TEXT);
+            Log.v("tag", "text = " + text);
+            mainActivityPresenter.addNewNote(ID++, text);
+            mainActivityPresenter.showAllNotes();
+            noteAdapter.setData(notes);
+        }
+    }
 
 }
+

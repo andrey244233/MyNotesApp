@@ -19,7 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FullNoteScreenActivityPackage.FullNoteScreen"></activity>
+        <activity android:name=".FullNoteScreenActivityPackage.FullNoteScreen" />
+        <activity
+            android:name=".AddNewNoteActivity"
+            android:theme="@style/Theme.AppCompat.DialogWhenLarge">
+        </activity>
     </application>
 
 </manifest>

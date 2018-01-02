@@ -31,31 +31,20 @@ public class RealmDB {
         return currentNote;
     }
 
-    public void addNote(Context context) {
-//        realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.executeTransactionAsync(new Realm.Transaction() {
+    public void addNote(final int id, final String text, final String time) {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 Note note = realm.createObject(Note.class);
-                note.setText("text");
-                note.setTimeCreated("333333");
-                note.setNotification(true);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                Log.v("tag", "on success");
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-
-                Log.v("tag", "on error" + error.getCause());
+                note.setText(text);
+                note.setTimeCreated(time);
+                note.setNotification(false);
+                note.setId(id);
             }
         });
-        realm.commitTransaction();
+
     }
+
 
     public void deleteNote() {
 

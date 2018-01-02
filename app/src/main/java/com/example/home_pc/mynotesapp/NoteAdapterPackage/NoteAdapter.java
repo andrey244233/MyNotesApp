@@ -22,6 +22,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     private TextView tvText, tvTime;
     private Switch switchNotification;
     private ItemClickCallBack itemClickCallBack;
+    private boolean notify;
 
     public NoteAdapter(Context context, ArrayList<Note> notes) {
         mContext = context;
@@ -48,13 +49,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
         Note currentNote = listNotes.get(position);
         tvTime.setText(currentNote.getTimeCreated());
         tvText.setText(currentNote.getText());
-        boolean notify = currentNote.getNotification();
+         notify = currentNote.getNotification();
         switchNotification.setChecked(notify);
     }
 
     @Override
     public int getItemCount() {
         return listNotes.size();
+    }
+
+    public void setData(ArrayList<Note> listNotes) {
+        this.listNotes = listNotes;
+        notifyDataSetChanged();
     }
 
     public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -78,6 +84,5 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
                     break;
             }
         }
-
     }
 }

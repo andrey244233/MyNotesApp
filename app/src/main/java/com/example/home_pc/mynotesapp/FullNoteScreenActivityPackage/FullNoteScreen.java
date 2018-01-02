@@ -45,6 +45,7 @@ public class FullNoteScreen extends AppCompatActivity implements FullNoteScreenI
 
     @Override
     public void initViews() {
+        Log.v("tag", "ID = " + note.getId());
         tvTextFull.setText(note.getText());
         tvTimeFull.setText(note.getTimeCreated());
         switchFull.setChecked(note.getNotification());
