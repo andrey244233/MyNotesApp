@@ -9,6 +9,7 @@ import com.example.home_pc.mynotesapp.Data.RealmDB;
 import com.example.home_pc.mynotesapp.FullNoteScreenActivityPackage.FullNoteScreen;
 import com.example.home_pc.mynotesapp.Model;
 import com.example.home_pc.mynotesapp.Note;
+import com.example.home_pc.mynotesapp.NotificationActivity;
 
 import java.util.ArrayList;
 
@@ -37,6 +38,9 @@ public class MainActivityPresenter {
     }
 
     public void openNotificationActivity(Context context) {
+        Intent intent = new Intent(context, NotificationActivity.class);
+
+        context.startActivity(intent);
     }
 
     public void showAllNotes() {
